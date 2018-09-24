@@ -3,70 +3,131 @@ package com.minesweeper;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.core.env.Environment;
 import org.springframework.test.context.junit4.SpringRunner;
 
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
 public class MinesweeperTest {
-
+	
+	@Autowired Environment env;
+	
 	@Test
-	public void testSetFieldLenght() {
-		Minesweeper minesweeper = new Minesweeper(2, "{ \"bombsPosition\" : \"1000\" }");
-		minesweeper.setFieldLength(3);
-		Assert.assertEquals(new Integer(3), minesweeper.getFieldLength());
+	public void testInvalidJson() {
+		try{
+			new Minesweeper(2, "[{ \"bombsPosition\" : [[1,0],[0,0]] }");
+		}catch (BombsJsonInvalidException e) {
+			Assert.assertTrue(true);
+			return;
+		}
+		
+		Assert.assertTrue(false);
+		
 	}
 	
 	@Test
-	public void testPositionNotValidOnXNegative() {
-		Minesweeper minesweeper = new Minesweeper(2, "{ \"bombsPosition\" : \"1000\" }");
+	public void testInvalidJsonWithNullBombsPosition() {
+		try{
+			new Minesweeper(2, "{ \"bombsPosition\" : null }");
+		}catch (BombsJsonInvalidException e) {
+			Assert.assertTrue(true);
+			return;
+		}
+		
+		Assert.assertTrue(false);
+		
+	}
+	
+	@Test
+	public void testInvalidJsonWithMissmatchOfArraySizeSmaller() {
+		try{
+			new Minesweeper(3, "{ \"bombsPosition\" : [[1,0],[0,0]] }");
+		}catch (BombsJsonInvalidException e) {
+			Assert.assertTrue(true);
+			return;
+		}
+		
+		Assert.assertTrue(false);
+		
+	}
+	
+	@Test
+	public void testInvalidJsonWithMissmatchOfArraySizeBigger() {
+		try{
+			new Minesweeper(1, "{ \"bombsPosition\" : [[1,0],[0,0]] }");
+		}catch (BombsJsonInvalidException e) {
+			Assert.assertTrue(true);
+			return;
+		}
+		
+		Assert.assertTrue(false);
+		
+	}
+	
+	@Test
+	public void testInvalidJsonWithMissmatchOfArrayRowWithColumns() {
+		try{
+			new Minesweeper(2, "{ \"bombsPosition\" : [[1,0],[0]] }");
+		}catch (BombsJsonInvalidException e) {
+			Assert.assertTrue(true);
+			return;
+		}
+		
+		Assert.assertTrue(false);
+	}
+	
+	@Test
+	public void testPositionNotValidOnXNegative() throws BombsJsonInvalidException {
+		Minesweeper minesweeper = new Minesweeper(2, "{ \"bombsPosition\" : [[1,0],[0,0]] }");
 		Assert.assertEquals(null, minesweeper.checkPosition(-1, 0));
 	}
 	
 	@Test
-	public void testPositionNotValidOnXBiggerThanSide() {
-		Minesweeper minesweeper = new Minesweeper(2, "{ \"bombsPosition\" : \"1000\" }");
+	public void testPositionNotValidOnXBiggerThanSide() throws BombsJsonInvalidException {
+		Minesweeper minesweeper = new Minesweeper(2, "{ \"bombsPosition\" : [[1,0],[0,0]] }");
 		Assert.assertEquals(null, minesweeper.checkPosition(2, 0));
 	}
 	
 	@Test
-	public void testPositionNotValidOnYNegative() {
-		Minesweeper minesweeper = new Minesweeper(2, "{ \"bombsPosition\" : \"1000\" }");
+	public void testPositionNotValidOnYNegative() throws BombsJsonInvalidException {
+		Minesweeper minesweeper = new Minesweeper(2, "{ \"bombsPosition\" : [[1,0],[0,0]] }");
 		Assert.assertEquals(null, minesweeper.checkPosition(0, -1));
 	}
 	
 	@Test
-	public void testPositionNotValidOnYBiggerThanSide() {
-		Minesweeper minesweeper = new Minesweeper(2, "{ \"bombsPosition\" : \"1000\" }");
+	public void testPositionNotValidOnYBiggerThanSide() throws BombsJsonInvalidException {
+		Minesweeper minesweeper = new Minesweeper(2, "{ \"bombsPosition\" : [[1,0],[0,0]] }");
 		Assert.assertEquals(null, minesweeper.checkPosition(0, 2));
 	}
 	
 	@Test
-	public void testPositionValidAndTherIsOneBombFromRight() {
+	public void testPositionValidAndTherIsOneBombFromRight() throws BombsJsonInvalidException {
 		
-		Minesweeper minesweeper = new Minesweeper(2, "{ \"bombsPosition\" : \"1000\" }");
+		Minesweeper minesweeper = new Minesweeper(2, "{ \"bombsPosition\" : [[1,0],[0,0]] }");
 		Assert.assertEquals(new Integer(1), minesweeper.checkPosition(1, 0));
 	}
 	
 	@Test
-	public void testPositionValidAndTherIsOneBombFromDown() {
+	public void testPositionValidAndTherIsOneBombFromDown() throws BombsJsonInvalidException {
 		
-		Minesweeper minesweeper = new Minesweeper(2, "{ \"bombsPosition\" : \"1000\" }");
+		Minesweeper minesweeper = new Minesweeper(2, "{ \"bombsPosition\" : [[1,0],[0,0]] }");
 		Assert.assertEquals(new Integer(1), minesweeper.checkPosition(0, 1));
 	}
 	
 	@Test
-	public void testPositionValidAndTherIsOneBombFromRightDown() {
+	public void testPositionValidAndTherIsOneBombFromRightDown() throws BombsJsonInvalidException {
 		
-		Minesweeper minesweeper = new Minesweeper(2, "{ \"bombsPosition\" : \"1000\" }");
+		Minesweeper minesweeper = new Minesweeper(2, "{ \"bombsPosition\" : [[1,0],[0,0]] }");
 		Assert.assertEquals(new Integer(1), minesweeper.checkPosition(1, 1));
 	}
 	
 	@Test
-	public void testPositionValidAndThereIsBomb() {
+	public void testPositionValidAndThereIsBomb() throws BombsJsonInvalidException {
 		
-		Minesweeper minesweeper = new Minesweeper(2, "{ \"bombsPosition\" : \"1000\" }");
+		Minesweeper minesweeper = new Minesweeper(2, "{ \"bombsPosition\" : [[1,0],[0,0]] }");
 		Assert.assertEquals(new Integer(-1), minesweeper.checkPosition(0, 0));
 	}
 
@@ -74,26 +135,22 @@ public class MinesweeperTest {
 	@Test
 	public void testPositionInvalid() {
 		
-		Minesweeper minesweeper = new Minesweeper(0, "{ \"bombsPosition\" : \"1000\" }");
-		Assert.assertEquals(null, minesweeper.checkPosition(0, 0));
+		try{
+			Minesweeper minesweeper = new Minesweeper(0, "{ \"bombsPosition\" : [[1,0],[0,0]] }");
+		}catch (BombsJsonInvalidException e) {
+			Assert.assertTrue(true);
+			return;
+		}
+		
+		Assert.assertTrue(false);
+		
 	}
 	
 	@Test
-	public void testPositionInAValidFieldOfBigSize() {
+	public void testPositionInAValidFieldOfBigSize() throws BombsJsonInvalidException {
 		
-		Minesweeper minesweeper = new Minesweeper(3, "{ \"bombsPosition\" : \"111000000\" }");
+		Minesweeper minesweeper = new Minesweeper(3, "{ \"bombsPosition\" : [[1,1,1],[0,0,0],[0,0,0]]}");
 		Assert.assertEquals(new Integer(-1), minesweeper.checkPosition(0, 0));
 	}
 	
-	@Test
-	public void testGetBombNumberPositionWithNegativePosition() {
-		Minesweeper minesweeper = new Minesweeper(5, "{ \"bombsPosition\" : \"1111100000000001111100000\" }");
-		Assert.assertEquals(new Integer(0), minesweeper.getBombNumber(-1));
-	}
-	
-	@Test
-	public void testGetBombNumberPositionWithPositionBiggerThanMaxFiledNumber() {
-		Minesweeper minesweeper = new Minesweeper(5, "{ \"bombsPosition\" : \"1111100000000001111100000\" }");
-		Assert.assertEquals(new Integer(0), minesweeper.getBombNumber(40));
-	}
 }

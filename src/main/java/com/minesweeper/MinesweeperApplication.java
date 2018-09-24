@@ -24,7 +24,7 @@ public class MinesweeperApplication {
 	    	return;
 		}
 	    
-	    System.out.print("Enter the json with the bomb position the format should be such as { \"bombsPosition\" : \"1000\" }: for a square 2x2: ");
+	    System.out.print("Enter the json with the bomb position the format should be such as { \"bombsPosition\" : [[1,0],[0,0] }: for a square 2x2: ");
 	    String bombsPositionJson = scanner.next();
 	    
 	    System.out.println("json: "+bombsPositionJson);
@@ -36,8 +36,10 @@ public class MinesweeperApplication {
 	    	return;
 		}
 	    
-	    int iter = 0;
-	    while(iter < minesweeper.getFieldLength()){
+	    System.out.println("press n to continue");
+	    String next = scanner.next();
+	    
+	    while(next.equalsIgnoreCase("n")){
 	    	
 	    	System.out.println("type the coordinates of the point into the field such as x,y :");
 		    String coords = scanner.next();
@@ -66,10 +68,10 @@ public class MinesweeperApplication {
 			}else{
 				System.out.println("Near to the position ("+coords+") there are "+result+" bombs");
 			}
-			
-			iter++;
+
 	    }
 	    
+	    System.out.println("exit game");
 	    scanner.close();
 	    
 		

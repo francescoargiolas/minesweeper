@@ -1,37 +1,38 @@
 package com.minesweeper;
 
-import java.util.Map;
-
-import org.springframework.boot.json.BasicJsonParser;
-import org.springframework.boot.json.JsonParser;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class Minesweeper {
 
-	private static String bombPositionnKey = "bombsPosition";
-	
 	Integer fieldSide;
-	Integer fieldLength;
-	String bombsPosition;
+	Integer[][] bombsPosition;
 	
-	public Minesweeper(Integer fieldSide, String bombsPositionJson) {
+	public Minesweeper(Integer fieldSide, String bombsPositionJson) throws BombsJsonInvalidException {
 		super();
 		this.fieldSide = fieldSide;
-		this.fieldLength = (fieldSide * fieldSide) -1 ;
 		
-		JsonParser jsonParser = new BasicJsonParser();
-		Map<String, Object> jsonMap = jsonParser.parseMap(bombsPositionJson);
-		this.bombsPosition = (String) jsonMap.get(Minesweeper.bombPositionnKey);
+		try{
+			ObjectMapper mapper = new ObjectMapper();
+			BombsJson res = mapper.readValue(bombsPositionJson, BombsJson.class);
+			this.bombsPosition = res.getBombsPosition();
+			
+			//check that each element of the array is setted
+			if(this.bombsPosition.length != fieldSide){
+				throw new BombsJsonInvalidException("BombsPosition missing");
+			}else{
+				for (Integer[] row : bombsPosition) {
+					if(row.length != fieldSide){
+						throw new BombsJsonInvalidException("BombsPosition missing");
+					}
+				}
+			}
+			
+		}catch (Exception e) {
+			throw new BombsJsonInvalidException("Bomb position Json not valid");
+		}
 		
 	}
 		
-	public Integer getFieldLength() {
-		return fieldLength;
-	}
-
-	public void setFieldLength(Integer fieldLength) {
-		this.fieldLength = fieldLength;
-	}
-
 	/*
 	 * 	parmas: x position and y position of the game field
 	 * 
@@ -43,33 +44,36 @@ public class Minesweeper {
 	 */
 	public Integer checkPosition(int x, int y){
 		
-		int position = y * fieldSide + x;
-		
-		if( x<0 || x>fieldSide-1 || y<0 || y>fieldSide-1){
-			return null;
-		}else if(getBombNumber(position) == 1){
-			return -1;
-		}else{
-			int bombNumerRowBeforeLeft = (y > 0 && x > 0)? getBombNumber(position - fieldSide - 1):0;
-			int bombNumerRowBeforeCenter = (y > 0)? getBombNumber(position - fieldSide):0;
-			int bombNumerRowBeforeRight = (y > 0 && x < fieldSide - 1)? getBombNumber(position - fieldSide + 1):0;
-			int bombNumerRowActualLeft = (x > 0)? getBombNumber(position -1):0;
-			int bombNumerRowActualRight = (x < fieldSide -1)? getBombNumber(position +1):0;
-			int bombNumerRowAfterLeft = (y < fieldSide - 1 && x > 0)? getBombNumber(position + fieldSide - 1):0;
-			int bombNumerRowAfterCenter = (y < fieldSide - 1)? getBombNumber(position + fieldSide):0;
-			int bombNumerRowAfterRight = (y < fieldSide - 1 && x < fieldSide -1)? getBombNumber(position + fieldSide + 1):0;
-			
-			return bombNumerRowBeforeLeft + bombNumerRowBeforeCenter + bombNumerRowBeforeRight + 
-					bombNumerRowActualLeft + bombNumerRowActualRight + bombNumerRowAfterLeft + bombNumerRowAfterCenter
-					+ bombNumerRowAfterRight;
+		Integer checkPositionResult = null;
+		try {
+			checkPositionResult = this.bombsPosition[y][x];
+		} catch (Exception e) {
+			return checkPositionResult;
 		}
-
+		
+		if(checkPositionResult == 1){
+			return -1;
+		}
+		
+		int bombNumerRowBeforeLeft = getBombsNumber(x-1,y-1);
+		int bombNumerRowBeforeCenter = getBombsNumber(x,y-1);
+		int bombNumerRowBeforeRight = getBombsNumber(x+1,y-1);
+		int bombNumerRowActualLeft = getBombsNumber(x-1,y);
+		int bombNumerRowActualRight = getBombsNumber(x+1,y);
+		int bombNumerRowAfterLeft = getBombsNumber(x-1,y+1);
+		int bombNumerRowAfterCenter = getBombsNumber(x,y+1);
+		int bombNumerRowAfterRight = getBombsNumber(x+1,y+1);
+		
+		return bombNumerRowBeforeLeft +bombNumerRowBeforeCenter + bombNumerRowBeforeRight +bombNumerRowActualLeft +
+				bombNumerRowActualRight + bombNumerRowAfterLeft +bombNumerRowAfterCenter + bombNumerRowAfterRight;
+		
 	}
 	
-	public Integer getBombNumber(int position){
-		if(position >= 0 && position <= fieldLength){
-			return Integer.valueOf(bombsPosition.substring(position, position+1));
-		}else{
+	private Integer getBombsNumber(int x, int y){
+		
+		try {
+			return this.bombsPosition[y][x];
+		} catch (Exception e) {
 			return 0;
 		}
 	}
