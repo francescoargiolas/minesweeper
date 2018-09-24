@@ -12,6 +12,13 @@ import org.springframework.test.context.junit4.SpringRunner;
 public class MinesweeperTest {
 
 	@Test
+	public void testSetFieldLenght() {
+		Minesweeper minesweeper = new Minesweeper(2, "{ \"bombsPosition\" : \"1000\" }");
+		minesweeper.setFieldLength(3);
+		Assert.assertEquals(new Integer(3), minesweeper.getFieldLength());
+	}
+	
+	@Test
 	public void testPositionNotValidOnXNegative() {
 		Minesweeper minesweeper = new Minesweeper(2, "{ \"bombsPosition\" : \"1000\" }");
 		Assert.assertEquals(null, minesweeper.checkPosition(-1, 0));
@@ -76,5 +83,17 @@ public class MinesweeperTest {
 		
 		Minesweeper minesweeper = new Minesweeper(3, "{ \"bombsPosition\" : \"111000000\" }");
 		Assert.assertEquals(new Integer(-1), minesweeper.checkPosition(0, 0));
+	}
+	
+	@Test
+	public void testGetBombNumberPositionWithNegativePosition() {
+		Minesweeper minesweeper = new Minesweeper(5, "{ \"bombsPosition\" : \"1111100000000001111100000\" }");
+		Assert.assertEquals(new Integer(0), minesweeper.getBombNumber(-1));
+	}
+	
+	@Test
+	public void testGetBombNumberPositionWithPositionBiggerThanMaxFiledNumber() {
+		Minesweeper minesweeper = new Minesweeper(5, "{ \"bombsPosition\" : \"1111100000000001111100000\" }");
+		Assert.assertEquals(new Integer(0), minesweeper.getBombNumber(40));
 	}
 }

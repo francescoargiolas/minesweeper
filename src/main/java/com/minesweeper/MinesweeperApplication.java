@@ -1,12 +1,9 @@
 package com.minesweeper;
 
-import java.io.UnsupportedEncodingException;
-import java.security.InvalidKeyException;
+import java.util.Scanner;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-
-import com.gigya.socialize.SigUtils;
 
 @SpringBootApplication
 public class MinesweeperApplication {
@@ -14,28 +11,6 @@ public class MinesweeperApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(MinesweeperApplication.class, args);
 		
-		String UID = "75e521a5858748d88bcb44f628987283";
-		String timestamp = "1536928356";
-		String secret = "test";
-		String signature = "4S7gW665R2ugnKHjolOlyYedLBk="; //"bVXp5BNDNvMqUflVx8cd+UBvpZg=";
-		
-		try {
-			
-			String signatureStr = SigUtilsExtended.getUserSignature(UID, timestamp, secret, signature);
-			System.out.println("signatureStr: "+signatureStr);
-			
-			boolean res = SigUtils.validateUserSignature(UID,timestamp,secret,signature);
-			System.out.println("is signature valid? "+res);
-			
-		} catch (InvalidKeyException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-		/*
 		System.out.println("#### initialized application ");
 		
 		Scanner scanner = new Scanner(System.in);
@@ -94,7 +69,9 @@ public class MinesweeperApplication {
 			
 			iter++;
 	    }
-	    */
+	    
+	    scanner.close();
+	    
 		
 	}
 }

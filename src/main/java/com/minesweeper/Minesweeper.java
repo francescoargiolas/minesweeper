@@ -2,14 +2,12 @@ package com.minesweeper;
 
 import java.util.Map;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.boot.json.BasicJsonParser;
 import org.springframework.boot.json.JsonParser;
 
 public class Minesweeper {
 
-	private static String BOMB_POSITION_KEY = "bombsPosition";
+	private static String bombPositionnKey = "bombsPosition";
 	
 	Integer fieldSide;
 	Integer fieldLength;
@@ -21,32 +19,18 @@ public class Minesweeper {
 		this.fieldLength = (fieldSide * fieldSide) -1 ;
 		
 		JsonParser jsonParser = new BasicJsonParser();
-		jsonParser.parseMap(bombsPositionJson);
-		
-		Map<String, Object> jsonMap = null;
-		try {
-	         jsonMap = jsonParser.parseMap(bombsPositionJson);
-	         
-	         this.bombsPosition = (String) jsonMap.get(Minesweeper.BOMB_POSITION_KEY);
-	    } catch (Exception e) {
-	    	throw new RuntimeException("Json that describe bombs position is not valid");
-	    }
+		Map<String, Object> jsonMap = jsonParser.parseMap(bombsPositionJson);
+		this.bombsPosition = (String) jsonMap.get(Minesweeper.bombPositionnKey);
 		
 	}
-	
-	
-	
+		
 	public Integer getFieldLength() {
 		return fieldLength;
 	}
 
-
-
 	public void setFieldLength(Integer fieldLength) {
 		this.fieldLength = fieldLength;
 	}
-
-
 
 	/*
 	 * 	parmas: x position and y position of the game field
@@ -55,7 +39,7 @@ public class Minesweeper {
 	 *	null : position is not valid
 	 *	-1 : there is a bomb in this point
 	 *	0: there is not bombs close to this point
-	 *	1-8: there are bombs close tho this point 
+	 *	1-8: there are bombs close to this point 
 	 */
 	public Integer checkPosition(int x, int y){
 		
@@ -68,12 +52,12 @@ public class Minesweeper {
 		}else{
 			int bombNumerRowBeforeLeft = (y > 0 && x > 0)? getBombNumber(position - fieldSide - 1):0;
 			int bombNumerRowBeforeCenter = (y > 0)? getBombNumber(position - fieldSide):0;
-			int bombNumerRowBeforeRight = (y > 0 && x < fieldSide)? getBombNumber(position - fieldSide + 1):0;
+			int bombNumerRowBeforeRight = (y > 0 && x < fieldSide - 1)? getBombNumber(position - fieldSide + 1):0;
 			int bombNumerRowActualLeft = (x > 0)? getBombNumber(position -1):0;
-			int bombNumerRowActualRight = (x < fieldSide)? getBombNumber(position +1):0;
-			int bombNumerRowAfterLeft = (y < fieldSide && x > 0)? getBombNumber(position + fieldSide - 1):0;
-			int bombNumerRowAfterCenter = (y < fieldSide)? getBombNumber(position + fieldSide):0;
-			int bombNumerRowAfterRight = (y < fieldSide && x < fieldSide)? getBombNumber(position + fieldSide + 1):0;
+			int bombNumerRowActualRight = (x < fieldSide -1)? getBombNumber(position +1):0;
+			int bombNumerRowAfterLeft = (y < fieldSide - 1 && x > 0)? getBombNumber(position + fieldSide - 1):0;
+			int bombNumerRowAfterCenter = (y < fieldSide - 1)? getBombNumber(position + fieldSide):0;
+			int bombNumerRowAfterRight = (y < fieldSide - 1 && x < fieldSide -1)? getBombNumber(position + fieldSide + 1):0;
 			
 			return bombNumerRowBeforeLeft + bombNumerRowBeforeCenter + bombNumerRowBeforeRight + 
 					bombNumerRowActualLeft + bombNumerRowActualRight + bombNumerRowAfterLeft + bombNumerRowAfterCenter
@@ -82,11 +66,12 @@ public class Minesweeper {
 
 	}
 	
-	private Integer getBombNumber(int position){
+	public Integer getBombNumber(int position){
 		if(position >= 0 && position <= fieldLength){
 			return Integer.valueOf(bombsPosition.substring(position, position+1));
-		}else 
+		}else{
 			return 0;
+		}
 	}
 
 }
