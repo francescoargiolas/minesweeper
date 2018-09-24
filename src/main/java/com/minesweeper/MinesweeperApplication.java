@@ -15,7 +15,7 @@ public class MinesweeperApplication {
 		
 		Scanner scanner = new Scanner(System.in);
 
-	    System.out.print("Enter the size of the side of your field: ");
+	    System.out.print("Enter the size of the side of your square: ");
 	    Integer fieldSide = null;
 	    try{
 	    	fieldSide = Integer.valueOf(scanner.next());
@@ -24,7 +24,7 @@ public class MinesweeperApplication {
 	    	return;
 		}
 	    
-	    System.out.print("Enter the json with the bomb position the format showld be like this { \"bombsPosition\" : \"1000\" }: for a field 2x2: ");
+	    System.out.print("Enter the json with the bomb position the format should be such as { \"bombsPosition\" : \"1000\" }: for a square 2x2: ");
 	    String bombsPositionJson = scanner.next();
 	    
 	    System.out.println("json: "+bombsPositionJson);
@@ -52,7 +52,7 @@ public class MinesweeperApplication {
 		    	y = Integer.valueOf(coordsArray[1]);
 		    	
 		    }catch (Exception e) {
-		    	System.out.print("The value of coorddinates is not correct");
+		    	System.out.print("The value of coordinates is not correct");
 		    	return;
 			}
 
@@ -64,7 +64,7 @@ public class MinesweeperApplication {
 				System.out.println("YOU LOSE!!!!");
 				return;
 			}else{
-				System.out.println("Close to the position ("+coords+") there are "+result+" bombs");
+				System.out.println("Near to the position ("+coords+") there are "+result+" bombs");
 			}
 			
 			iter++;
